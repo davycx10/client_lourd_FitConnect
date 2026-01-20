@@ -1,3 +1,4 @@
+/*
 package model;
 
 import  java.sql.SQLException;
@@ -82,3 +83,4 @@ public class Model {
         return lesPromotions;
     }
 }
+*/
