@@ -23,7 +23,7 @@ public class VueConnexion extends JFrame implements ActionListener, KeyListener 
         // Configuration de la fenêtre
         this.setTitle("FitConnect for Admin");
         this.setBounds(300, 50, 1100, 650);
-        this.setLayout(null); // tu veux garder le layout null → je garde
+        this.setLayout(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
 
@@ -39,7 +39,7 @@ public class VueConnexion extends JFrame implements ActionListener, KeyListener 
         try {
             uneImage = new ImageIcon(getClass().getResource("/images/image.png"));
         } catch (Exception e) {
-            System.out.println("⚠ Image introuvable : vérifie le chemin /src/images/");
+            System.out.println("⚠ Image introuvable : vérifiez le chemin /src/images/");
         }
 
         JLabel imageLogo = new JLabel(uneImage);

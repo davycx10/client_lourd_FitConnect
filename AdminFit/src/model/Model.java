@@ -1,4 +1,3 @@
-/*
 package model;
 
 import  java.sql.SQLException;
@@ -9,7 +8,7 @@ import  java.util.ArrayList;
 public class Model {
 
     //instancier la classe bdd  et création de la connexion
-    private static BDD uneBdd = new BDD("localhost", "root", "", "scolarite_cfa");
+    private static BDD uneBdd = new BDD("localhost", "admin", "myadmin", "Fitconnect");
 
     public static User selectWhereUser(String email, String mdp) {
         User unUser = null;
@@ -83,4 +82,3 @@ public class Model {
         return lesPromotions;
     }
 }
-*/

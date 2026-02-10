@@ -51,7 +51,8 @@ public class BDD {
         }
     }
 
-    public Connection getMaConnexion() {
+    public Connection getMaConnexion()
+    {
         return this.maConnexion;
     }
 }
