@@ -241,6 +241,7 @@ Pour contribuer :
 
 1. Créer une branche dédiée.  
 2. Ajouter ou modifier les fichiers nécessaires.  
-3. Documenter les changements dans le README.  
-4. Faire une pull request.
+3. Documenter les changements dans le README.  ou dans doc/
 
+
+WARNING dans aucun cas toucher a script.sql
