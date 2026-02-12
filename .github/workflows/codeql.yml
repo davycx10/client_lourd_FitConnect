@@ -47,10 +47,11 @@ jobs:
 
       - name: Manual Java build
         run: |
-          mkdir -p bin
-          javac -d bin $(find src -name "*.java")
+          mkdir -p AdminFit/bin
+          javac -d AdminFit/bin $(find AdminFit/src -name "*.java")
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
+
