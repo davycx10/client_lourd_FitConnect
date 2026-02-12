@@ -1,16 +1,3 @@
-Voici un **README complet**, clair, structuré, professionnel, sans emoji, et parfaitement adapté à ton projet.  
-Il explique :
-
-- l’architecture du projet  
-- le rôle de chaque fichier  
-- le fonctionnement du MVC  
-- le point d’entrée  
-- comment lancer l’application  
-- comment contribuer  
-
-Tu peux le coller tel quel dans un fichier `README.md` à la racine du projet.
-
----
 
 # FitConnect Admin – Documentation (v0.01)
 
@@ -24,7 +11,7 @@ FitConnect Admin est une application Java Swing permettant à un administrateur 
 - la création du premier compte administrateur,
 - la connexion et la navigation dans un tableau de bord.
 
-Cette version 0.01 constitue la base fonctionnelle du back-office administrateur.
+Cette version 0.01 constitue la base fonctionnelle (théorique) du back-office administrateur.
 
 L’application suit une architecture **MVC** (Model – View – Controller) claire et modulaire.
 
