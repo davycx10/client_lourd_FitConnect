@@ -1,57 +1,59 @@
 package view;
 
-import controller.Controller;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
+import controller.Controller;
 
 /**
- * VueConnexion :
- * Permet à l'admin de se connecter.
+ * VueInscriptionAdmin :
+ * Permet de créer le premier compte admin.
  */
-public class VueConnexion extends JFrame implements ActionListener, KeyListener {
+public class VueInscriptionAdmin extends JFrame implements ActionListener {
 
     private JPanel panelForm = new JPanel();
-    private JButton btAnnuler = new JButton("Annuler");
-    private JButton btValider = new JButton("Valider");
 
+    private JTextField txtNom = new JTextField();
+    private JTextField txtPrenom = new JTextField();
     private JTextField txtEmail = new JTextField();
     private JPasswordField txtMdp = new JPasswordField();
+
+    private JButton btAnnuler = new JButton("Annuler");
+    private JButton btValider = new JButton("Valider");
 
     private JLabel lblMessage = new JLabel("", SwingConstants.CENTER);
 
     private final Color ORANGE = new Color(0xFF6C00);
     private final Color DARK = new Color(0x1A1A1A);
 
-    public VueConnexion() {
+    public VueInscriptionAdmin() {
 
-        this.setTitle("FitConnect for Admin");
-        this.setBounds(300, 50, 1100, 650);
-        this.setLayout(null);
+        this.setTitle("FitConnect - Première authentification");
+        this.setBounds(300, 50, 800, 500);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
+        this.setLayout(null);
         this.getContentPane().setBackground(DARK);
 
-        ImageIcon uneImage = null;
-        try {
-            uneImage = new ImageIcon(getClass().getResource("/images/image.png"));
-        } catch (Exception e) {
-            System.out.println("Image introuvable : /src/images/");
-        }
-
-        JLabel imageLogo = new JLabel(uneImage);
-        imageLogo.setBounds(40, 40, 450, 450);
-        this.add(imageLogo);
-
-        panelForm.setBounds(600, 150, 400, 300);
+        panelForm.setBounds(150, 80, 500, 260);
         panelForm.setBackground(DARK);
-        panelForm.setLayout(new GridLayout(3, 2, 10, 10));
+        panelForm.setLayout(new GridLayout(5, 2, 10, 10));
 
+        JLabel lblNom = new JLabel("Nom :");
+        JLabel lblPrenom = new JLabel("Prénom :");
         JLabel lblEmail = new JLabel("Email :");
         JLabel lblMdp = new JLabel("Mot de passe :");
 
+        lblNom.setForeground(Color.WHITE);
+        lblPrenom.setForeground(Color.WHITE);
         lblEmail.setForeground(Color.WHITE);
         lblMdp.setForeground(Color.WHITE);
+
+        panelForm.add(lblNom);
+        panelForm.add(txtNom);
+
+        panelForm.add(lblPrenom);
+        panelForm.add(txtPrenom);
 
         panelForm.add(lblEmail);
         panelForm.add(txtEmail);
@@ -67,14 +69,12 @@ public class VueConnexion extends JFrame implements ActionListener, KeyListener 
 
         this.add(panelForm);
 
-        lblMessage.setBounds(550, 480, 500, 30);
+        lblMessage.setBounds(100, 360, 600, 30);
         lblMessage.setForeground(Color.WHITE);
         this.add(lblMessage);
 
         btAnnuler.addActionListener(this);
         btValider.addActionListener(this);
-        txtEmail.addKeyListener(this);
-        txtMdp.addKeyListener(this);
 
         this.setVisible(true);
     }
@@ -94,28 +94,20 @@ public class VueConnexion extends JFrame implements ActionListener, KeyListener 
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == btAnnuler) {
+            txtNom.setText("");
+            txtPrenom.setText("");
             txtEmail.setText("");
             txtMdp.setText("");
             lblMessage.setText("");
         }
 
         if (e.getSource() == btValider) {
+            String nom = txtNom.getText();
+            String prenom = txtPrenom.getText();
             String email = txtEmail.getText();
             String mdp = new String(txtMdp.getPassword());
 
-            Controller.connexionAdmin(email, mdp);
+            Controller.creerAdmin(nom, prenom, email, mdp);
         }
     }
-
-    @Override public void keyTyped(KeyEvent e) {}
-    @Override public void keyPressed(KeyEvent e) {}
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            btValider.doClick();
-        }
-    }
-
-    
 }

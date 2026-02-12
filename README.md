@@ -1,44 +1,259 @@
-# client_lourd_FitConnect
-partie client lourd pour l'administrateur
+Voici un **README complet**, clair, structuré, professionnel, sans emoji, et parfaitement adapté à ton projet.  
+Il explique :
+
+- l’architecture du projet  
+- le rôle de chaque fichier  
+- le fonctionnement du MVC  
+- le point d’entrée  
+- comment lancer l’application  
+- comment contribuer  
+
+Tu peux le coller tel quel dans un fichier `README.md` à la racine du projet.
+
+---
+
+# FitConnect Admin – Documentation (v0.01)
+
+## 1. Présentation du projet
+
+FitConnect Admin est une application Java Swing permettant à un administrateur de gérer :
+
+- les candidatures des coachs,
+- les coachs validés,
+- les clients,
+- la création du premier compte administrateur,
+- la connexion et la navigation dans un tableau de bord.
+
+Cette version 0.01 constitue la base fonctionnelle du back-office administrateur.
+
+L’application suit une architecture **MVC** (Model – View – Controller) claire et modulaire.
+
+---
+
+## 2. Architecture générale
+
+Le projet est organisé en trois packages :
+
+```
+src/
+ ├── controller/
+ │     └── Controller.java
+ ├── model/
+ │     ├── Model.java
+ │     ├── BDD.java
+ │     ├── Admin.java
+ │     ├── Coach.java
+ │     ├── Client.java
+ │     └── Candidature.java
+ └── view/
+       ├── VueAccueil.java
+       ├── VueInscriptionAdmin.java
+       ├── VueConnexion.java
+       └── VueDashboard.java
+```
+
+---
+
+## 3. Description des fichiers
+
+### 3.1. Package model
+
+#### BDD.java  
+Classe responsable de la connexion MySQL.  
+Elle gère :
+- le chargement du driver JDBC,
+- l’ouverture de la connexion,
+- la fermeture de la connexion.
+
+Elle ne contient aucune logique métier.
+
+#### Model.java  
+C’est le cœur du backend.  
+Il contient toutes les requêtes SQL nécessaires :
+
+- creerAdmin  
+- connexionAdmin  
+- getAllCandidatures  
+- validerCandidature  
+- updateStatutCandidature  
+- getAllCoachs  
+- supprimerCoach  
+- getAllClients  
+
+Il renvoie des objets Java (Admin, Coach, Client, Candidature).
+
+#### Admin.java / Coach.java / Client.java / Candidature.java  
+Ce sont des classes de données (POJO).  
+Elles représentent une ligne de table de la base de données.  
+Elles contiennent uniquement :
+
+- des attributs,
+- un constructeur,
+- des getters/setters.
+
+Aucune logique métier.
+
+---
+
+### 3.2. Package controller
+
+#### Controller.java  
+C’est le point central de l’application.  
+Il gère :
+
+- le lancement de l’application (méthode main),
+- la navigation entre les vues,
+- les appels au Model,
+- la mise à jour des vues.
+
+Il sert d’intermédiaire entre les vues et la base de données.
+
+---
+
+### 3.3. Package view
+
+Toutes les vues utilisent Swing et respectent la charte graphique Basic-Fit (orange, noir, gris foncé).
+
+#### VueAccueil.java  
+Première fenêtre affichée.  
+Elle propose deux choix :
+
+- Première authentification (création du compte admin)
+- Connexion
+
+#### VueInscriptionAdmin.java  
+Formulaire permettant de créer le premier compte administrateur.  
+Une fois validé, l’utilisateur est redirigé vers la page de connexion.
+
+#### VueConnexion.java  
+Formulaire de connexion de l’administrateur.  
+En cas de succès, l’application ouvre le tableau de bord.
+
+#### VueDashboard.java  
+Fenêtre principale après connexion.  
+Elle contient :
+
+- un header de navigation,
+- un CardLayout permettant d’afficher :
+  - la liste des coachs,
+  - la liste des clients,
+  - la liste des candidatures.
+
+Fonctionnalités disponibles :
+- suppression d’un coach,
+- validation/refus d’une candidature,
+- affichage dynamique des données.
+
+---
+
+## 4. Fonctionnement du MVC
+
+### Vue → Controller  
+Les vues ne contiennent aucune logique métier.  
+Elles appellent uniquement des méthodes du Controller.
+
+### Controller → Model  
+Le Controller transmet les actions utilisateur au Model.
+
+### Model → Base de données  
+Le Model exécute les requêtes SQL via la classe BDD.
+
+### Model → Controller → Vue  
+Les résultats sont renvoyés sous forme d’objets Java, puis affichés dans les vues.
+
+---
+
+## 5. Point d’entrée de l’application
+
+Le point d’entrée est la méthode `main` dans `Controller.java` :
+
+```java
+public static void main(String[] args) {
+    uneVueAccueil = new VueAccueil();
+}
+```
+
+C’est cette classe qu’il faut exécuter pour lancer l’application.
+
+---
+
+## 6. Comment lancer l’application
+
+### Avec IntelliJ IDEA  
+1. Ouvrir le projet.  
+2. Ouvrir `Controller.java`.  
+3. Cliquer sur le bouton Run à côté de `main`.
+
+### Avec Eclipse  
+1. Clic droit sur `Controller.java`.  
+2. Run As → Java Application.
+
+### Avec VS Code  
+1. Ouvrir `Controller.java`.  
+2. Cliquer sur Run au-dessus de la méthode main.
+
+### En ligne de commande  
+Depuis le dossier `src` :
+
+```
+javac controller/Controller.java
+java controller.Controller
+```
+
+---
+
+## 7. Base de données
+
+Le projet utilise une base MySQL nommée `fitconnect`.  
+Les tables nécessaires sont :
+
+- admin  
+- candidature  
+- coach  
+- client  
+- programme  
+
+Le fichier SQL doit être importé avant de lancer l’application.
+
+---
+
+## 8. Design et ergonomie
+
+Le design suit une charte simple et moderne :
+
+- Couleur principale : orange Basic-Fit (#FF6C00)
+- Couleur secondaire : noir foncé (#1A1A1A)
+- Fond des panneaux : gris foncé (#2B2B2B)
+- Boutons stylisés de manière uniforme
+- Layouts propres (GridLayout, BorderLayout, CardLayout)
+
+Le tableau de bord est organisé en sections claires et facilement navigables.
+
+---
+
+## 9. Version actuelle
+
+  
+Statut : Base fonctionnelle (en théorie) complète pour l’administrateur.
+
+Fonctionnalités implémentées :
+- Création du premier admin
+- Connexion admin
+- Dashboard complet
+- Gestion des coachs
+- Gestion des clients
+- Gestion des candidatures
 
 
-Contexte du projet : Basic-Fit Training – Application Admin (Java Swing)
-L’application Admin Basic-Fit Training est un outil interne développé en Java (Swing), destiné au personnel de Basic-Fit. Elle permet de gérer les coachs et les adhérents de la plateforme web Basic-Fit Training, afin d’assurer un suivi sérieux, contrôlé et conforme aux attentes de l’enseigne.
-L’admin n’est pas un coach ni un client : c’est un employé Basic-Fit qui supervise ce qui se passe sur la plateforme.
 
-Rôle de l’Admin
-L’admin a pour mission de :
-Gérer les candidatures des coachs.
-Contrôler les profils coachs et clients.
-Supprimer des comptes en cas de résiliation ou de problème.
-Vérifier la répartition des clients entre les coachs.
-L’application Java Swing lui offre une interface simple pour effectuer ces actions sans passer par le site web public.
+---
 
-Gestion des coachs
-Quand un coach remplit le formulaire « Postuler comme coach » sur le site :
-Sa candidature remonte dans l’application Admin.
-L’admin peut :
-Consulter la candidature : nom, prénom, e-mail, spécialité (prise de masse, sèche, remise en forme, etc.), éventuellement quelques infos de base sur son expérience.
-Accepter la candidature : le coach devient alors coach actif sur la plateforme et peut se connecter à son espace coach.
-Refuser la candidature : le coach n’apparaît pas dans la liste des coachs et ne peut pas accéder à l’espace coach.
-Une fois accepté, l’admin peut ensuite :
-Voir la liste des coachs actifs.
-Supprimer un coach (fin de collaboration, problème, etc.).
-Voir le nombre de clients associés à chaque coach pour vérifier la charge ou repérer des anomalies.
+## 10. Contribution
 
-Gestion des clients (adhérents)
-L’admin peut également :
-Consulter le profil d’un client :
-nom, prénom, e-mail, poids, taille, objectif (prise de masse, sèche, remise en forme), disponibilités, coach assigné.
-Supprimer un client :
-par exemple lorsqu’un adhérent arrête son abonnement ou demande la suppression de son compte.
-Vérifier les relations coach ↔ client :
-voir quels clients sont suivis par quel coach.
+Pour contribuer :
 
-Technologie et intégration
-L’application Admin en Java Swing est connectée à la même base de données que le site web PHP.
-Ainsi :
-Quand un admin accepte un coach, celui-ci peut se connecter sur le site.
-Quand un admin supprime un coach ou un client, cela se reflète directement sur la plateforme web.
-
+1. Créer une branche dédiée.  
+2. Ajouter ou modifier les fichiers nécessaires.  
+3. Documenter les changements dans le README.  
+4. Faire une pull request.
 

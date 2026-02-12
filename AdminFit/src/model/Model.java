@@ -1,84 +1,271 @@
 package model;
 
-import  java.sql.SQLException;
-import  java.sql.ResultSet;
-import  java.sql.Statement;
-import  java.util.ArrayList;
+
+import java.sql.*;
+import java.util.ArrayList;
 
 public class Model {
 
-    //instancier la classe bdd  et création de la connexion
-    private static BDD uneBdd = new BDD("localhost", "admin", "myadmin", "Fitconnect");
+    // ---------------------------------------------------------
+    // Connexion à la base via ta classe BDD
+    // ---------------------------------------------------------
+    private static BDD uneBdd = new BDD("localhost", "admin", "myadmin", "fitconnect");
 
-    public static User selectWhereUser(String email, String mdp) {
-        User unUser = null;
-        String requete = "select * from user where email = '"+email+"' and mdp = '"+mdp+"';";
+    // ---------------------------------------------------------
+    // Création d'un admin (première authentification)
+    // ---------------------------------------------------------
+    public static boolean creerAdmin(String nom, String prenom, String email, String mdp) {
+        boolean ok = false;
+        String requete = "INSERT INTO admin VALUES (NULL, ?, ?, ?, ?);";
+
         try {
             uneBdd.seConnecter();
-            Statement unStat = uneBdd.getMaConnexion().createStatement(); // cette ligne correspond à prepare de PDP
-            ResultSet unRes = unStat.executeQuery(requete);  //cette ligne correspond à fetch de PDP
+            PreparedStatement ps = uneBdd.getMaConnexion().prepareStatement(requete);
 
-            if(unRes.next()) {
-                unUser = new User(unRes.getInt("iduser"), unRes.getString("nom"),
-                        unRes.getString("prenom"), unRes.getString("email"),
-                        unRes.getString("mdp"), unRes.getString("role"));
-            }
-            unStat.close();
+            ps.setString(1, nom);
+            ps.setString(2, prenom);
+            ps.setString(3, email);
+            ps.setString(4, mdp);
 
+            ps.executeUpdate();
+            ok = true;
+
+            ps.close();
             uneBdd.seDeconnecter();
-        }catch(SQLException exp) {
-            System.out.println("Erreur d'execution de la requete :"+requete);
+        } catch (SQLException exp) {
+            System.out.println("Erreur creerAdmin : " + exp.getMessage());
         }
-        return unUser;
+
+        return ok;
     }
 
-    public static void insertPromotion(Promotion unePromotion) {
-        String requete = "insert into promotion values (null, '" + unePromotion.getNom()
-                + "','" + unePromotion.getSalle()+"','"
-                + unePromotion.getDiplome()+"');";
+    // ---------------------------------------------------------
+    // Connexion d'un admin existant
+    // ---------------------------------------------------------
+    public static Admin connexionAdmin(String email, String mdp) {
+        Admin unAdmin = null;
+        String requete = "SELECT * FROM admin WHERE email = ? AND mot_de_passe = ?;";
+
         try {
             uneBdd.seConnecter();
-            Statement unStat = uneBdd.getMaConnexion().createStatement();
-            unStat.execute(requete);
-            unStat.close();
+            PreparedStatement ps = uneBdd.getMaConnexion().prepareStatement(requete);
+
+            ps.setString(1, email);
+            ps.setString(2, mdp);
+
+            ResultSet unRes = ps.executeQuery();
+
+            if (unRes.next()) {
+                unAdmin = new Admin(
+                    unRes.getInt("id_admin"),
+                    unRes.getString("nom"),
+                    unRes.getString("prenom"),
+                    unRes.getString("email"),
+                    unRes.getString("mot_de_passe")
+                );
+            }
+
+            ps.close();
             uneBdd.seDeconnecter();
+        } catch (SQLException exp) {
+            System.out.println("Erreur connexionAdmin : " + exp.getMessage());
         }
-        catch (SQLException exp) {
-            System.out.println("Erreur d'execution de la requete:" + requete);
+
+        return unAdmin;
+    }
+
+    // ---------------------------------------------------------
+    // Récupération de toutes les candidatures
+    // ---------------------------------------------------------
+    public static ArrayList<Candidature> getAllCandidatures() {
+        ArrayList<Candidature> liste = new ArrayList<>();
+        String requete = "SELECT * FROM candidature ORDER BY date_candidature DESC;";
+
+        try {
+            uneBdd.seConnecter();
+            Statement st = uneBdd.getMaConnexion().createStatement();
+            ResultSet rs = st.executeQuery(requete);
+
+            while (rs.next()) {
+                Candidature c = new Candidature(
+                    rs.getInt("id_candidature"),
+                    rs.getString("nom"),
+                    rs.getString("prenom"),
+                    rs.getString("email"),
+                    rs.getString("adresse"),
+                    rs.getInt("basic_fit"),
+                    rs.getString("specialite"),
+                    rs.getInt("experience"),
+                    rs.getString("cv_pdf"),
+                    rs.getString("linkedin"),
+                    rs.getString("password"),
+                    rs.getString("statut")
+                );
+                liste.add(c);
+            }
+
+            st.close();
+            uneBdd.seDeconnecter();
+        } catch (SQLException exp) {
+            System.out.println("Erreur getAllCandidatures : " + exp.getMessage());
+        }
+
+        return liste;
+    }
+
+    // ---------------------------------------------------------
+    // Validation d'une candidature → insertion dans coach
+    // ---------------------------------------------------------
+    public static boolean validerCandidature(Candidature c) {
+        boolean ok = false;
+
+        String requete = "INSERT INTO coach VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        try {
+            uneBdd.seConnecter();
+            PreparedStatement ps = uneBdd.getMaConnexion().prepareStatement(requete);
+
+            ps.setString(1, c.getNom());
+            ps.setString(2, c.getPrenom());
+            ps.setString(3, c.getEmail());
+            ps.setString(4, c.getAdresse());
+            ps.setInt(5, c.getBasicFit());
+            ps.setString(6, c.getSpecialite());
+            ps.setInt(7, c.getExperience());
+            ps.setString(8, c.getPassword());
+
+            ps.executeUpdate();
+            ok = true;
+
+            ps.close();
+            uneBdd.seDeconnecter();
+        } catch (SQLException exp) {
+            System.out.println("Erreur validerCandidature : " + exp.getMessage());
+        }
+
+        return ok;
+    }
+
+    // ---------------------------------------------------------
+    // Mise à jour du statut d'une candidature
+    // ---------------------------------------------------------
+    public static void updateStatutCandidature(int id, String statut) {
+        String requete = "UPDATE candidature SET statut = ? WHERE id_candidature = ?;";
+
+        try {
+            uneBdd.seConnecter();
+            PreparedStatement ps = uneBdd.getMaConnexion().prepareStatement(requete);
+
+            ps.setString(1, statut);
+            ps.setInt(2, id);
+
+            ps.executeUpdate();
+            ps.close();
+            uneBdd.seDeconnecter();
+        } catch (SQLException exp) {
+            System.out.println("Erreur updateStatutCandidature : " + exp.getMessage());
         }
     }
 
-    public static ArrayList<Promotion> selectAllPromotions(String filtre){
-        ArrayList<Promotion> lesPromotions = new ArrayList<Promotion>();
-        String requete;
-
-        if(filtre.equals("")) {
-            requete = "select * from promotion;";
-        } else {
-            requete = "SELECT * FROM promotion WHERE nom LIKE '%"+filtre+
-                    "%' OR salle LIKE '%"+filtre+
-                    "%' OR diplome LIKE '%"+filtre+"%';";
-        }
+    // ---------------------------------------------------------
+    // Récupération de tous les coachs
+    // ---------------------------------------------------------
+    public static ArrayList<Coach> getAllCoachs() {
+        ArrayList<Coach> liste = new ArrayList<>();
+        String requete = "SELECT * FROM coach;";
 
         try {
             uneBdd.seConnecter();
-            Statement unStat = uneBdd.getMaConnexion().createStatement();
-            ResultSet desResultats = unStat.executeQuery(requete);
+            Statement st = uneBdd.getMaConnexion().createStatement();
+            ResultSet rs = st.executeQuery(requete);
 
-            while (desResultats.next()) {
-                Promotion unePromotion = new Promotion (desResultats.getInt("idPromotion"),
-                        desResultats.getString("nom"), desResultats.getString("salle"),
-                        desResultats.getString("diplome"));
-                //ajout de la promotion dans l'ArrayList
-                lesPromotions.add(unePromotion);
+            while (rs.next()) {
+                Coach c = new Coach(
+                    rs.getInt("id"),
+                    rs.getString("nom"),
+                    rs.getString("prenom"),
+                    rs.getString("email"),
+                    rs.getString("adresse"),
+                    rs.getInt("basic_fit"),
+                    rs.getString("specialite"),
+                    rs.getInt("experience"),
+                    rs.getString("password")
+                );
+                liste.add(c);
             }
-            unStat.close();
+
+            st.close();
             uneBdd.seDeconnecter();
-        }
-        catch (SQLException exp) {
-            System.out.println("Erreur d'execution de la requete:" + requete);
+        } catch (SQLException exp) {
+            System.out.println("Erreur getAllCoachs : " + exp.getMessage());
         }
 
-        return lesPromotions;
+        return liste;
+    }
+
+    // ---------------------------------------------------------
+    // Suppression d'un coach
+    // ---------------------------------------------------------
+    public static boolean supprimerCoach(int idCoach) {
+        boolean ok = false;
+        String requete = "DELETE FROM coach WHERE id = ?;";
+
+        try {
+            uneBdd.seConnecter();
+            PreparedStatement ps = uneBdd.getMaConnexion().prepareStatement(requete);
+
+            ps.setInt(1, idCoach);
+            ps.executeUpdate();
+            ok = true;
+
+            ps.close();
+            uneBdd.seDeconnecter();
+        } catch (SQLException exp) {
+            System.out.println("Erreur supprimerCoach : " + exp.getMessage());
+        }
+
+        return ok;
+    }
+
+    // ---------------------------------------------------------
+    // Récupération de tous les clients
+    // ---------------------------------------------------------
+    public static ArrayList<Client> getAllClients() {
+        ArrayList<Client> liste = new ArrayList<>();
+        String requete = "SELECT * FROM client;";
+
+        try {
+            uneBdd.seConnecter();
+            Statement st = uneBdd.getMaConnexion().createStatement();
+            ResultSet rs = st.executeQuery(requete);
+
+            while (rs.next()) {
+                Client c = new Client(
+                    rs.getInt("id_client"),
+                    rs.getString("nom"),
+                    rs.getString("prenom"),
+                    rs.getString("mail"),
+                    rs.getString("mot_de_passe"),
+                    rs.getInt("poids"),
+                    rs.getInt("taille"),
+                    rs.getString("genre"),
+                    rs.getInt("basic_fit"),
+                    rs.getString("objectif"),
+                    rs.getString("dispo_jours"),
+                    rs.getString("dispo_creneaux"),
+                    rs.getString("motivation"),
+                    rs.getInt("id_coach")
+                );
+                liste.add(c);
+            }
+
+            st.close();
+            uneBdd.seDeconnecter();
+        } catch (SQLException exp) {
+            System.out.println("Erreur getAllClients : " + exp.getMessage());
+        }
+
+        return liste;
     }
 }
+
