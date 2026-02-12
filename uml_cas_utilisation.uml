@@ -1,0 +1,22 @@
+5. UML – Cas d’utilisation (Use Case Admin)
+Code
+                +----------------------+
+                |        Admin         |
+                +----------------------+
+                         /|\
+                          |
+                          |
+        +---------------------------------------------+
+        |                 Use Cases                   |
+        +---------------------------------------------+
+        | - Créer premier compte admin                |
+        | - Se connecter                              |
+        | - Consulter candidatures                    |
+        | - Valider candidature                       |
+        | - Refuser candidature                       |
+        | - Consulter coachs                          |
+        | - Supprimer coach                           |
+        | - Consulter clients                         |
+        +---------------------------------------------+
+
+        
