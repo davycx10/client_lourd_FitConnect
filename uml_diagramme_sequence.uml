@@ -1,0 +1,22 @@
+3. UML – Diagramme de séquence (connexion admin)
+
+Utilisateur -> VueConnexion : clique sur "Valider"
+VueConnexion -> Controller : connexionAdmin(email, mdp)
+Controller -> Model : connexionAdmin(email, mdp)
+Model -> BDD : seConnecter()
+BDD -> Model : connexion OK
+Model -> Controller : retourne Admin ou null
+Controller -> VueConnexion : afficherMessage() ou ouvrir Dashboard
+
+-----------------------------------------------------------------------------
+
+4. UML – Diagramme de séquence (validation candidature)
+
+Admin -> VueDashboard : clique sur "Valider"
+VueDashboard -> Controller : validerCandidature(c)
+Controller -> Model : validerCandidature(c)
+Model -> BDD : INSERT INTO coach ...
+Model -> Controller : true/false
+Controller -> Model : updateStatutCandidature(id, "valide")
+Controller -> VueDashboard : afficherMessage("Candidature validée")
+Controller -> VueDashboard : chargerCandidatures()
