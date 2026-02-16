@@ -257,10 +257,10 @@ public class VueDashboard extends JFrame implements ActionListener {
         modelCoachs.setRowCount(0);
         for (Coach c : lesCoachs) {
             modelCoachs.addRow(new Object[]{
-                c.getId(),
-                c.getNom(),
-                c.getPrenom(),
-                c.getEmail()
+                    c.getId(),
+                    c.getNom(),
+                    c.getPrenom(),
+                    c.getEmail()
             });
         }
     }
@@ -269,12 +269,12 @@ public class VueDashboard extends JFrame implements ActionListener {
         modelClients.setRowCount(0);
         for (Client c : lesClients) {
             modelClients.addRow(new Object[]{
-                c.getIdClient(),
-                c.getNom(),
-                c.getPrenom(),
-                c.getMail(),
-                c.getObjectif(),
-                c.getIdCoach()
+                    c.getIdClient(),
+                    c.getNom(),
+                    c.getPrenom(),
+                    c.getMail(),
+                    c.getObjectif(),
+                    c.getIdCoach()
             });
         }
     }
@@ -283,13 +283,13 @@ public class VueDashboard extends JFrame implements ActionListener {
         modelCandidatures.setRowCount(0);
         for (Candidature c : lesCandidatures) {
             modelCandidatures.addRow(new Object[]{
-                c.getId(),
-                c.getNom(),
-                c.getPrenom(),
-                c.getEmail(),
-                c.getSpecialite(),
-                c.getExperience(),
-                c.getStatut()
+                    c.getId(),
+                    c.getNom(),
+                    c.getPrenom(),
+                    c.getEmail(),
+                    c.getSpecialite(),
+                    c.getExperience(),
+                    c.getStatut()
             });
         }
     }

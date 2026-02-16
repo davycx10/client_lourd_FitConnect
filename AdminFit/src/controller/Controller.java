@@ -3,6 +3,8 @@ package controller;
 import model.*;
 import view.*;
 
+import java.util.ArrayList;
+
 public class Controller {
 
     // ---------------------------------------------------------
@@ -71,7 +73,14 @@ public class Controller {
     // Chargement des candidatures dans la vue dashboard
     // ---------------------------------------------------------
     public static void chargerCandidatures() {
+
         uneVueDashboard.remplirTableCandidatures(Model.getAllCandidatures());
+    }
+
+    // candidature
+    public static ArrayList<Candidature> getAllCandidaturesForDashboard() {
+
+        return Model.getAllCandidatures();
     }
 
     // ---------------------------------------------------------
@@ -123,6 +132,9 @@ public class Controller {
     // Chargement des clients
     // ---------------------------------------------------------
     public static void chargerClients() {
+
         uneVueDashboard.remplirTableClients(Model.getAllClients());
     }
+
+
 }
