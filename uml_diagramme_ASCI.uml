@@ -1,0 +1,32 @@
+                +------------------+
+                |      BDD         |
+                +------------------+
+                | seConnecter()    |
+                | seDeconnecter()  |
+                +------------------+
+                        ^
+                        |
+                +------------------+
+                |      Model       |
+                +------------------+
+                | creerAdmin()     |
+                | connexionAdmin() |
+                | getAllCoachs()   |
+                | getAllClients()  |
+                | getAllCandidatures() |
+                +------------------+
+                        ^
+                        |
+                +------------------+
+                |    Controller    |
+                +------------------+
+                | main()           |
+                | ouvrirConnexion()|
+                | creerAdmin()     |
+                | connexionAdmin() |
+                +------------------+
+                 ^        ^       ^
+                 |        |       |
+     +----------------+  +----------------+  +----------------+
+     | VueAccueil     |  | VueConnexion   |  | VueDashboard  |
+     +----------------+  +----------------+  +----------------+

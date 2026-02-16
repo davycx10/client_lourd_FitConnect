@@ -1,0 +1,477 @@
+------------------------------
+table à utiliser
+
+------------------------
+
+```sql
+-- 1. BASE DE DONNÉES
+CREATE DATABASE IF NOT EXISTS fitconnect
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+USE fitconnect;
+
+-- 2. TABLE ADMIN
+CREATE TABLE admin (
+    id_admin INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    mot_de_passe VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 3. TABLE CANDIDATURE (remplace totalement la table candidat)
+CREATE TABLE candidature (
+    id_candidature INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    adresse VARCHAR(255) NOT NULL,
+    basic_fit TINYINT(1) NOT NULL,
+    specialite ENUM('prise_masse','seche','remise_forme') NOT NULL,
+    experience INT NOT NULL,
+    cv_pdf VARCHAR(255) NOT NULL,
+    linkedin VARCHAR(255),
+    password VARCHAR(255) NOT NULL,
+    statut ENUM('en_attente','valide','refuse') DEFAULT 'en_attente',
+    date_candidature TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_decision TIMESTAMP NULL,
+    id_admin INT NULL,
+    CONSTRAINT fk_candidature_admin
+        FOREIGN KEY (id_admin) REFERENCES admin(id_admin)
+        ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 4. TABLE COACH (coach validé uniquement)
+CREATE TABLE coach (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    adresse VARCHAR(255) NOT NULL,
+    basic_fit TINYINT(1) NOT NULL,
+    specialite ENUM('prise_masse','seche','remise_forme') NOT NULL,
+    experience INT NOT NULL,
+    password VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 5. TABLE CLIENT
+CREATE TABLE client (
+    id_client INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(50) NOT NULL,
+    prenom VARCHAR(50) NOT NULL,
+    mail VARCHAR(100) NOT NULL UNIQUE,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    poids INT NOT NULL,
+    taille INT NOT NULL,
+    genre ENUM('homme','femme','autre','prefere_pas','croissant') NOT NULL,
+    basic_fit TINYINT(1) DEFAULT 0,
+    objectif VARCHAR(50) NOT NULL,
+    dispo_jours TEXT NULL,
+    dispo_creneaux VARCHAR(255) NULL,
+    motivation TEXT NOT NULL,
+    date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_coach INT NULL,
+    CONSTRAINT fk_client_coach
+        FOREIGN KEY (id_coach) REFERENCES coach(id)
+        ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 6. TABLE PROGRAMME (inchangée)
+CREATE TABLE programme (
+    id_programme INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    type VARCHAR(50) NOT NULL
+) ENGINE=InnoDB;
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+Parfait, on avance bien.
+Je te donne **exactement ce que tu veux** :
+
+- ✔ les **requêtes SQL** pour valider/refuser une candidature
+- ✔ le **code Java (JDBC)** pour gérer les candidatures
+- ✔ avec **des commentaires clairs** pour que tu saches quoi modifier
+
+Et tout ça **simple**, **logique**, **propre**, adapté à un projet étudiant.
+
+---
+
+# ✅ 1. REQUÊTES SQL POUR GÉRER UNE CANDIDATURE
+
+## 🔹 A. Récupérer toutes les candidatures en attente
+
+```sql
+SELECT * FROM candidature
+WHERE statut = 'en_attente';
+```
+
+---
+
+## 🔹 B. Récupérer une candidature précise
+
+```sql
+SELECT * FROM candidature
+WHERE id_candidature = ?;
+```
+
+---
+
+## 🔹 C. Valider une candidature (mise à jour du statut)
+
+```sql
+UPDATE candidature
+SET statut = 'valide',
+    date_decision = NOW(),
+    id_admin = ?
+WHERE id_candidature = ?;
+```
+
+---
+
+## 🔹 D. Refuser une candidature
+
+```sql
+UPDATE candidature
+SET statut = 'refuse',
+    date_decision = NOW(),
+    id_admin = ?
+WHERE id_candidature = ?;
+```
+
+---
+
+## 🔹 E. Transformer une candidature validée → coach
+
+```sql
+INSERT INTO coach (nom, prenom, email, adresse, basic_fit, specialite, experience, password)
+SELECT nom, prenom, email, adresse, basic_fit, specialite, experience, password
+FROM candidature
+WHERE id_candidature = ?;
+```
+
+---
+
+## 🔹 F. (Optionnel) Supprimer la candidature après validation
+
+```sql
+DELETE FROM candidature
+WHERE id_candidature = ?;
+```
+
+---
+
+# ✅ 2. CODE JAVA (JDBC) POUR GÉRER LES CANDIDATURES
+
+Je te fais un code **simple**, **propre**, **commenté**, que tu peux adapter.
+
+---
+
+# 🔹 A. Récupérer toutes les candidatures en attente
+
+```java
+public List<Candidature> getCandidaturesEnAttente(Connection conn) throws Exception {
+    String sql = "SELECT * FROM candidature WHERE statut = 'en_attente'";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ResultSet rs = ps.executeQuery();
+
+    List<Candidature> list = new ArrayList<>();
+
+    while (rs.next()) {
+        Candidature c = new Candidature();
+        c.setId(rs.getInt("id_candidature"));
+        c.setNom(rs.getString("nom"));
+        c.setPrenom(rs.getString("prenom"));
+        c.setEmail(rs.getString("email"));
+        c.setSpecialite(rs.getString("specialite"));
+        c.setExperience(rs.getInt("experience"));
+        // ajoute les autres champs si tu veux
+
+        list.add(c);
+    }
+
+    return list;
+}
+```
+
+---
+
+# 🔹 B. Valider une candidature
+
+```java
+public void validerCandidature(Connection conn, int idCandidature, int idAdmin) throws Exception {
+
+    // 1. Mettre à jour le statut
+    String updateSql = "UPDATE candidature SET statut='valide', date_decision=NOW(), id_admin=? WHERE id_candidature=?";
+    PreparedStatement ps = conn.prepareStatement(updateSql);
+    ps.setInt(1, idAdmin);
+    ps.setInt(2, idCandidature);
+    ps.executeUpdate();
+
+    // 2. Copier les infos dans la table coach
+    String insertSql = """
+        INSERT INTO coach (nom, prenom, email, adresse, basic_fit, specialite, experience, password)
+        SELECT nom, prenom, email, adresse, basic_fit, specialite, experience, password
+        FROM candidature
+        WHERE id_candidature = ?
+    """;
+
+    PreparedStatement ps2 = conn.prepareStatement(insertSql);
+    ps2.setInt(1, idCandidature);
+    ps2.executeUpdate();
+
+    // 3. (Optionnel) supprimer la candidature
+    String deleteSql = "DELETE FROM candidature WHERE id_candidature=?";
+    PreparedStatement ps3 = conn.prepareStatement(deleteSql);
+    ps3.setInt(1, idCandidature);
+    ps3.executeUpdate();
+}
+```
+
+---
+
+# 🔹 C. Refuser une candidature
+
+```java
+public void refuserCandidature(Connection conn, int idCandidature, int idAdmin) throws Exception {
+
+    String sql = "UPDATE candidature SET statut='refuse', date_decision=NOW(), id_admin=? WHERE id_candidature=?";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setInt(1, idAdmin);
+    ps.setInt(2, idCandidature);
+    ps.executeUpdate();
+
+    // Ici on ne copie rien dans coach
+    // Tu peux supprimer la candidature si tu veux
+}
+```
+
+---
+
+# 🔹 D. Classe Java Candidature (POJO)
+
+```java
+public class Candidature {
+    private int id;
+    private String nom;
+    private String prenom;
+    private String email;
+    private String specialite;
+    private int experience;
+
+    // + getters / setters
+}
+```
+
+---
+
+# 🎯 Tu veux aller plus loin ?
+
+Je peux te faire :
+
+- ✔ un **diagramme UML**
+- ✔ les **endpoints API** (Spring Boot)
+- ✔ une **interface graphique JavaFX** pour gérer les candidatures
+- ✔ un **système de login admin**
+- ✔ un **script SQL complet final** avec les programmes inclus
+
+Tu veux quoi pour la suite ?
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+Bien sûr qu’il est logique que l’admin doive se connecter — sinon n’importe qui pourrait valider des coachs.
+On va donc compléter ton système avec :
+
+- un **login admin** (SQL + Java)
+- la **vérification du mot de passe**
+- la **gestion de session** (simple, version étudiante)
+- et tout ça **clair, propre, commenté**, pour que tu puisses l’intégrer facilement.
+
+Je te fais ça **sans frameworks**, en **JDBC simple**, comme dans 95% des projets étudiants.
+
+---
+
+# ✅ 1. SQL : Connexion Admin
+
+## 🔹 Vérifier si un admin existe avec email + mot de passe
+
+```sql
+SELECT * FROM admin
+WHERE email = ?
+AND mot_de_passe = ?;
+```
+
+⚠️ Dans un vrai projet on mettrait un hash, mais pour un projet étudiant → **mot de passe en clair = OK**.
+
+---
+
+# 🔹 Vérifier si un email admin existe (pour éviter les doublons)
+
+```sql
+SELECT COUNT(*) FROM admin WHERE email = ?;
+```
+
+---
+
+# 🔹 Insérer un admin (si vous voulez en créer un par défaut)
+
+```sql
+INSERT INTO admin (nom, prenom, email, mot_de_passe)
+VALUES ('Admin', 'Principal', 'admin@fitconnect.com', 'admin123');
+```
+
+---
+
+# ✅ 2. JAVA : Connexion Admin (JDBC)
+
+Voici un code **simple**, **propre**, **commenté**, que tu peux coller dans ton projet.
+
+---
+
+## 🔹 Classe Admin (POJO)
+
+```java
+public class Admin {
+    private int id;
+    private String nom;
+    private String prenom;
+    private String email;
+
+    // getters + setters
+}
+```
+
+---
+
+## 🔹 Méthode Java : loginAdmin()
+
+```java
+public Admin loginAdmin(Connection conn, String email, String password) throws Exception {
+
+    // SQL pour vérifier l'admin
+    String sql = "SELECT * FROM admin WHERE email = ? AND mot_de_passe = ?";
+
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setString(1, email);
+    ps.setString(2, password);
+
+    ResultSet rs = ps.executeQuery();
+
+    // Si aucun admin trouvé → login échoué
+    if (!rs.next()) {
+        return null;
+    }
+
+    // Si trouvé → on crée un objet Admin
+    Admin admin = new Admin();
+    admin.setId(rs.getInt("id_admin"));
+    admin.setNom(rs.getString("nom"));
+    admin.setPrenom(rs.getString("prenom"));
+    admin.setEmail(rs.getString("email"));
+
+    return admin;
+}
+```
+
+### ✔ Ce que tu dois modifier :
+- Rien d’obligatoire, mais tu peux changer les noms de variables si tu veux.
+
+---
+
+# 🔥 3. Gestion de “session” admin (version étudiante)
+
+Comme vous n’avez pas de vrai système web, vous allez faire un truc simple :
+
+👉 Quand l’admin se connecte, vous stockez l’objet Admin dans une variable statique.
+
+Exemple :
+
+```java
+public class Session {
+    public static Admin adminConnecte = null;
+}
+```
+
+Puis dans ton code :
+
+```java
+Admin admin = loginAdmin(conn, email, password);
+
+if (admin != null) {
+    Session.adminConnecte = admin;
+    System.out.println("Connexion réussie !");
+} else {
+    System.out.println("Email ou mot de passe incorrect.");
+}
+```
+
+Et ensuite, pour vérifier si l’admin est connecté :
+
+```java
+if (Session.adminConnecte == null) {
+    System.out.println("Accès refusé : vous devez être connecté.");
+    return;
+}
+```
+
+---
+
+# 🔥 4. Intégration avec la validation des candidatures
+
+Tu vas utiliser `Session.adminConnecte.getId()` pour savoir quel admin valide.
+
+Exemple :
+
+```java
+validerCandidature(conn, idCandidature, Session.adminConnecte.getId());
+```
+
+---
+
+# 🎯 Résultat final
+
+Tu as maintenant :
+
+- ✔ un système admin complet
+- ✔ login admin (SQL + Java)
+- ✔ session admin
+- ✔ validation/refus de candidature
+- ✔ transformation candidature → coach
+
+Ton projet devient **cohérent**, **logique**, **propre**, et surtout **fonctionnel**.
+
+
+
+
+
+
+
+

@@ -1,0 +1,151 @@
++------------------+
+|      BDD         |
++------------------+
+| - serveur:String |
+| - user:String    |
+| - mdp:String     |
+| - bdd:String     |
+| - maConnexion:Connection |
++------------------+
+| + seConnecter()  |
+| + seDeconnecter()|
+| + getMaConnexion():Connection |
++------------------+
+
++------------------+
+|      Model       |
++------------------+
+| + creerAdmin(...) : boolean |
+| + connexionAdmin(...) : Admin |
+| + getAllCandidatures() : ArrayList<Candidature> |
+| + validerCandidature(Candidature) : boolean |
+| + updateStatutCandidature(int,String) |
+| + getAllCoachs() : ArrayList<Coach> |
+| + supprimerCoach(int) : boolean |
+| + getAllClients() : ArrayList<Client> |
++------------------+
+| uses BDD         |
++------------------+
+
++------------------+
+|    Controller    |
++------------------+
+| - uneVueAccueil:VueAccueil |
+| - uneVueConnexion:VueConnexion |
+| - uneVueInscriptionAdmin:VueInscriptionAdmin |
+| - uneVueDashboard:VueDashboard |
++------------------+
+| + main()         |
+| + ouvrirConnexion() |
+| + ouvrirInscriptionAdmin() |
+| + creerAdmin(...) |
+| + connexionAdmin(...) |
+| + chargerCoachs() |
+| + chargerClients() |
+| + chargerCandidatures() |
+| + supprimerCoach(int) |
+| + validerCandidature(Candidature) |
+| + refuserCandidature(int) |
++------------------+
+| uses Model       |
+| controls Views   |
++------------------+
+
++------------------+
+|      Admin       |
++------------------+
+| - idAdmin:int    |
+| - nom:String     |
+| - prenom:String  |
+| - email:String   |
+| - motDePasse:String |
++------------------+
+
++------------------+
+|      Coach       |
++------------------+
+| - id:int         |
+| - nom:String     |
+| - prenom:String  |
+| - email:String   |
+| - adresse:String |
+| - basicFit:int   |
+| - specialite:String |
+| - experience:int |
+| - password:String |
++------------------+
+
++------------------+
+|     Client       |
++------------------+
+| - idClient:int   |
+| - nom:String     |
+| - prenom:String  |
+| - mail:String    |
+| - motDePasse:String |
+| - poids:int      |
+| - taille:int     |
+| - genre:String   |
+| - basicFit:int   |
+| - objectif:String |
+| - dispoJours:String |
+| - dispoCreneaux:String |
+| - motivation:String |
+| - idCoach:int    |
++------------------+
+
++------------------+
+|   Candidature    |
++------------------+
+| - id:int         |
+| - nom:String     |
+| - prenom:String  |
+| - email:String   |
+| - adresse:String |
+| - basicFit:int   |
+| - specialite:String |
+| - experience:int |
+| - cvPdf:String   |
+| - linkedin:String |
+| - password:String |
+| - statut:String  |
++------------------+
+
++---------------------------+
+|       VueAccueil          |
++---------------------------+
+| + VueAccueil()            |
+| + actionPerformed()       |
++---------------------------+
+| calls Controller          |
++---------------------------+
+
++---------------------------+
+|  VueInscriptionAdmin      |
++---------------------------+
+| + afficherMessage()       |
+| + actionPerformed()       |
++---------------------------+
+| calls Controller          |
++---------------------------+
+
++---------------------------+
+|      VueConnexion         |
++---------------------------+
+| + afficherMessage()       |
+| + actionPerformed()       |
++---------------------------+
+| calls Controller          |
++---------------------------+
+
++---------------------------+
+|      VueDashboard         |
++---------------------------+
+| + remplirTableCoachs()    |
+| + remplirTableClients()   |
+| + remplirTableCandidatures() |
+| + afficherMessage()       |
+| + actionPerformed()       |
++---------------------------+
+| calls Controller          |
++---------------------------+
