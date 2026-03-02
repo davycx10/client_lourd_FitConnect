@@ -27,10 +27,10 @@ public class Controller {
     // ---------------------------------------------------------
     // Navigation vers la page d'inscription admin
     // ---------------------------------------------------------
-    public static void ouvrirInscriptionAdmin() {
-        uneVueAccueil.dispose();
-        uneVueInscriptionAdmin = new VueInscriptionAdmin();
-    }
+    // public static void ouvrirInscriptionAdmin() {
+    //     uneVueAccueil.dispose();
+    //     uneVueInscriptionAdmin = new VueInscriptionAdmin();
+    // }
 
     // ---------------------------------------------------------
     // Navigation vers la page de connexion

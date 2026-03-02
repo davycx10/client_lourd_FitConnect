@@ -18,7 +18,7 @@ public class VueAccueil extends JFrame implements ActionListener {
     private JPanel panelMain = new JPanel();
 
     // Boutons
-    private JButton btPremiereAuth = new JButton("Première authentification");
+    // private JButton btPremiereAuth = new JButton("Première authentification");
     private JButton btConnexion = new JButton("Se connecter");
 
     // Couleurs Basic-Fit
@@ -46,18 +46,18 @@ public class VueAccueil extends JFrame implements ActionListener {
         lblTitre.setFont(new Font("Arial", Font.BOLD, 22));
 
         // Style des boutons
-        styliserBouton(btPremiereAuth);
+        // styliserBouton(btPremiereAuth);
         styliserBouton(btConnexion);
 
         // Ajout au panel
         panelMain.add(lblTitre);
-        panelMain.add(btPremiereAuth);
+       // panelMain.add(btPremiereAuth);
         panelMain.add(btConnexion);
 
         this.add(panelMain);
 
         // Listeners
-        btPremiereAuth.addActionListener(this);
+        // btPremiereAuth.addActionListener(this);
         btConnexion.addActionListener(this);
 
         this.setVisible(true);
@@ -80,11 +80,13 @@ public class VueAccueil extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == btPremiereAuth) {
+        /**
+      if (e.getSource() == btPremiereAuth) {
             // Lien avec le CONTROLLER : ouverture de la vue d'inscription admin
             Controller.ouvrirInscriptionAdmin();
             this.dispose();
         }
+        */
 
         if (e.getSource() == btConnexion) {
             // Lien avec le CONTROLLER : ouverture de la vue de connexion
