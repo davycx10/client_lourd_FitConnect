@@ -9,8 +9,8 @@ public class Model {
     // ---------------------------------------------------------
     // Connexion à la base via ta classe BDD
     // ---------------------------------------------------------
-    private static BDD uneBdd = new BDD("localhost", "admin", "myadmin", "fitconnect");
-
+    // private static BDD uneBdd = new BDD("localhost", "admin", "myadmin", "fitconnect");
+    private static BDD uneBdd = new BDD("localhost", "adminphp", "", "fitconnect");
     // ---------------------------------------------------------
     // Création d'un admin (première authentification)
     // ---------------------------------------------------------
@@ -222,6 +222,30 @@ public class Model {
             uneBdd.seDeconnecter();
         } catch (SQLException exp) {
             System.out.println("Erreur supprimerCoach : " + exp.getMessage());
+        }
+
+        return ok;
+    }
+
+    // ---------------------------------------------------------
+    // Suppression d'un client
+    // ---------------------------------------------------------
+    public static boolean supprimerClient(int idClient) {
+        boolean ok = false;
+        String requete = "DELETE FROM client WHERE id = ?;";
+
+        try {
+            uneBdd.seConnecter();
+            PreparedStatement ps = uneBdd.getMaConnexion().prepareStatement(requete);
+
+            ps.setInt(1, idClient);
+            ps.executeUpdate();
+            ok = true;
+
+            ps.close();
+            uneBdd.seDeconnecter();
+        } catch (SQLException exp) {
+            System.out.println("Erreur supprimerClient : " + exp.getMessage());
         }
 
         return ok;

@@ -27,10 +27,10 @@ public class Controller {
     // ---------------------------------------------------------
     // Navigation vers la page d'inscription admin
     // ---------------------------------------------------------
-    public static void ouvrirInscriptionAdmin() {
-        uneVueAccueil.dispose();
-        uneVueInscriptionAdmin = new VueInscriptionAdmin();
-    }
+    // public static void ouvrirInscriptionAdmin() {
+    //     uneVueAccueil.dispose();
+    //     uneVueInscriptionAdmin = new VueInscriptionAdmin();
+    // }
 
     // ---------------------------------------------------------
     // Navigation vers la page de connexion
@@ -65,7 +65,8 @@ public class Controller {
             uneVueConnexion.afficherMessage("Identifiants incorrects.");
         } else {
             uneVueConnexion.dispose();
-            uneVueDashboard = new VueDashboard(unAdmin);
+            uneVueDashboard = new VueDashboard(unAdmin); // 1. on crée la vue
+            uneVueDashboard.remplirTableCoachs(Model.getAllCoachs()); // 2. on remplit APRÈS
         }
     }
 
@@ -136,5 +137,17 @@ public class Controller {
         uneVueDashboard.remplirTableClients(Model.getAllClients());
     }
 
+    // ---------------------------------------------------------
+    // Suppression d'un client
+    // ---------------------------------------------------------
+    public static void supprimerClient(int idClient) {
+        boolean ok = Model.supprimerClient(idClient);
 
+        if (ok) {
+            uneVueDashboard.afficherMessage("Client supprimé.");
+            chargerClients();
+        } else {
+            uneVueDashboard.afficherMessage("Erreur lors de la suppression.");
+        }
+    }
 }
