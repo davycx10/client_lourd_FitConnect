@@ -8,7 +8,6 @@ FitConnect Admin est une application Java Swing permettant à un administrateur 
 - les candidatures des coachs,
 - les coachs validés,
 - les clients,
-- la création du premier compte administrateur,
 - la connexion et la navigation dans un tableau de bord.
 
 Cette version 0.01 constitue la base fonctionnelle (théorique) du back-office administrateur.
@@ -230,6 +229,17 @@ Fonctionnalités implémentées :
 - Gestion des coachs
 - Gestion des clients
 - Gestion des candidatures
+
+
+---
+Dans IntelliJ <-- pour mysql:mysql-connector-java :
+
+File → Project Structure → Libraries
+Clique sur + → From Maven
+Tape : mysql:mysql-connector-java:8.0.33 (ou version superieur)
+OK partout
+
+Relance le projet et ça devrait se connecter.
 
 
 
