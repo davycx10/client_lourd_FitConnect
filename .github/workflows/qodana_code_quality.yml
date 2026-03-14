@@ -13,19 +13,19 @@ jobs:
       contents: write
       pull-requests: write
       checks: write
+
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      - name: 'Qodana Scan'
+      - name: Qodana Scan
         uses: JetBrains/qodana-action@v2025.2
         with:
           pr-mode: false
-          linter: jetbrains/qodana-jvm-community:2025.2
           use-caches: true
           post-pr-comment: true
           use-annotations: true
           upload-result: false
-          push-fixes: 'none'
+          push-fixes: none
